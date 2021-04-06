@@ -41,7 +41,7 @@ cranCoverage <- function(packages, test.dir = NULL, ...) {
         reportfile = sprintf('coverage_report_%s.html', package), 
         outputfile = sprintf('trace_%s.txt', package), 
         unittestdir = test.dir, ...), 
-    silent = TRUE, ...)
+    silent = FALSE, ...)
     assign(package, test.result, envir = executionL)
   }
 
@@ -84,6 +84,7 @@ cranCoverageHelper <- function(x, unittestdir, reportfile, ...) {
     if (!is.null(s$testthats) || !is.null(s$additionaltests)) {
 
       if (!is.null(s$testthats)) 
+        base::require('testthat')
         return(reportCoverage(
           packagename = fn[1], packagedir = fn[1], 
           unittestdir = file.path(fn[1], s$testthatdir),
@@ -106,7 +107,7 @@ cranCoverageHelper <- function(x, unittestdir, reportfile, ...) {
       else
         exfs <- file.path(fn[1], 'tests', s$tests)
 
-      return(reportCoverage(packagename = fn[1], 
+      return(reportCoverage(packagedir = fn[1],
       sourcefiles = sfs, 
       executionfiles = exfs, 
       unittestdir = unittestdir, ...))

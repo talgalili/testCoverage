@@ -1,9 +1,8 @@
-# SVN revision:   $
-# Date of last change: 2013-09-29 $
-# Last changed by: $LastChangedBy: ccampbell $
+# Date of last change: 2014-09-30 $
+# Last changed by: $LastChangedBy: ttaverner $
 # 
 # Original author: ttaverner
-# Copyright Mango Solutions, Chippenham, UK 2013
+# Copyright Mango Solutions, Chippenham, UK 2013-2014
 ###############################################################################
 
 
@@ -38,17 +37,14 @@ is.assign <- function(x) {
 #' @rdname testCoverage-mask
 #' @export
 require <- function(package, ...) {
-  package <- as.character(substitute(package))
-  doChar <- "character.only" %in% names(list(...))
-  if (!exists("packagename")) 
-    packagename <- "" 
-  if(tolower(package) == tolower(packagename)) 
+  mc <- match.call()
+  package <- tryCatch(eval.parent(as.list(mc)$package), error = function(e) as.character(as.list(mc)$package))
+  if (!exists("packagename")) { packagename <- "" }
+  if (tolower(package) == tolower(packagename)) {
     cat("require(", package, ") ignored\n", sep = "")
-  else {
-  if (doChar)
-    base::require(package = package, ...)
-  else 
-    base::require(package = package, ..., character.only = TRUE)
+  } else {
+    mc[[1]] <- quote(base::require)
+    eval.parent(mc)
   }
 }
 
@@ -56,11 +52,15 @@ require <- function(package, ...) {
 #' @rdname testCoverage-mask
 #' @export
 library <- function(package, ...) {
-  package <- as.character(substitute(package))
+  mc <- match.call()
+  package <- tryCatch(eval.parent(as.list(mc)$package), error = function(e) as.character(as.list(mc)$package))
   if (!exists("packagename")) { packagename <- "" }
-  if (tolower(package) == tolower(packagename)) 
-    cat("require(", package, ") ignored\n", sep = "")
-  else base::library(package = package, ..., character.only = TRUE)
+  if (tolower(package) == tolower(packagename)) {
+    cat("library(", package, ") ignored\n", sep = "")
+  } else {
+    mc[[1]] <- quote(base::library)
+    eval.parent(mc)
+  }
 }
 
 # @title check whether function is in global environment, otherwise access from package
